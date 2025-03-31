@@ -178,8 +178,14 @@ if (imm9 & 0x100) {
 
 uint64_t address = CURRENT_STATE.REGS[rn] + imm9;
 
+    
+uint32_t word = mem_read_32(address & ~0x3);
+uint32_t byte_pos = address & 0x3;
+uint32_t byte_mask = 0xFF << (byte_pos * 8);
+uint8_t byte_to_store = CURRENT_STATE.REGS[rt] & 0xFF;
+word = (word & ~byte_mask) | (byte_to_store << (byte_pos * 8));
 
-mem_write_32(address, CURRENT_STATE.REGS[rt] & 0xFF);
+mem_write_32(address & ~0x3, word);
 
 }
 
