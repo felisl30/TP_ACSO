@@ -1,0 +1,45 @@
+Felipe Sidiropulos, fsidiropuloslamouret@udesa.edu.ar
+Aclaracion: el archivo .gdb_history quedo solo con lo que utilice en el servidor, luego trabaje en una terminal local/
+
+phase_1:
+En esta parte: lea    rsi,[rip+0xc7c62]  se guarda la direccion de memoria de un string
+luego se llama a strings_not_equal que recibe como parametros rsi y rdi (que es el input) y 
+verifica si los strings son iguales o no, guardando el resultado en eax, con test y jne se maneja la 
+logica de que si eax es 0 (los strings son iguales) entonces no hace el salto al explode_bomb.
+Para definir que input poner hice x/s $rsi.
+
+phase_2:
+Strol separa el input en 2 y guarda en edi la suma de los dos parametros - 32, que luego se pasa como parametro junto a los dos numeros.
+Una vez dentro de misterio, hay dos contadores: ecx y edx, el primero cuenta las veces que se ejecuta el loop
+(hasta 32) y edx que cuenta la cantidad de 1s en eax (en phase_2 es edi), cuando se cumplen las 32 iteraciones sale del loop y verifica 
+que edx sea igual a 11 (cmp edx,0xb, jne 401e49 <misterio+0x3e>) si no es igual, explota la bomba. Luego se debe ejecutar 
+js  401e42 <misterio+0x37> para que no vaya al explode_bomb, para eso la flag de signo debe estar prendida luego del xor,
+por lo que uno de los numeros deberia empezar con un 1 en el bit mas significativo y el otro no
+Elegi que b sea negativo y elegi un numero que al sumar a+b-32 tuviera 11 bits. Empece con 4095 que tiene doce 1s y
+al restarle 32 en binario me queda un numero con 11 bits. Luego elegi arbitrariamente b = -5 entonces a debia ser 4100.
+
+
+phase_3:
+Lo primero mas importante es que el input deben ser dos cosas ya que luego del scanf, verifica que sean efectivamente 2 inputs y que el numero
+que ingreso se guarda en [rsp+0xc].Luego en readlines se ejecuta el archivo palabras.txt como 'r' y se guardan en un puntero. Se llama a cuenta 
+que basicamente hace una busqueda bimaria en esta lista de palabras, eax se esta usando como contador y con cmp eax,0xb y el jg que le sigue, se indica que 
+debe de ejecutarse menos de 11 veces el algoritmo, por lo que el input deberia ser como minimo una palabra de la lista que se encuentre 
+en menos de 11 pasos. Se guarda la cantidad de iteraciones en [rsp+0x14] y se compara con el numero guardado, si son iguales no salta a la bomba, por ultimo 
+verifica que la cantidad de iteraciones sea mayor que 6. 
+Entonces elegi una palabra que se encuentre en mas de 6 pasos pero menos de 11 e inserte la palabra con la cantidad de iteraciones.
+Yo elegi abatatar, que se encuentra en 8 pasos.
+
+phase_4:
+Lo primero mas importante es tambien que scanf deberia registrar al menos 2 numeros (cmp eax,0x1 y luego jle). Hace and  eax,0xf , cmp  eax,0xf y luego un je, 
+por lo que mi primer numero almacenado en eax, al pasarlo a binario los ultimos 4 bits deberian ser distintos de 1111. Luego inicia dos contadores, edx y ecx
+para poder contar las iteraciones y acumular el recultado de cada indice. En mov eax,DWORD PTR [rsi+rax*4] guarda el valor del indice en eax (que sera usado como
+indice en la proxima iteracion) y luego lo acumula en ecx. Hace esto hasta en contrar el numero 15 y corta el bucle. Por ultimo hace cmp edx,0x5 y un jne, lo 
+que indica que se debe encontrar el numero 15 en 5 pasos y mi segundo numero deberia coincidir con ecx que es el acumulador de valores 
+(cmp DWORD PTR [rsp+0x4],ecx y luego je para evitar la bomba).
+Para visualizar el array use x/16dw 0x4cde20 y m edevolvio: 
+0x4cde20 <array.0>:    7    4    6    8
+0x4cde30 <array.0+16>:    13    10    15    9
+0x4cde40 <array.0+32>:    0    12    3    5
+0x4cde50 <array.0+48>:    2    11    1    14
+Aqui hice la busqueda inversa, desde el valor 15 con el indice 6 fui para atras 5 pasos hasta encontrar el indice 7 y una acumulada de 44.
+
