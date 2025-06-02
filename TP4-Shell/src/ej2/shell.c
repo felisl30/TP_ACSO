@@ -12,6 +12,7 @@ int main() {
     char *commands[MAX_COMMANDS];
     int command_count = 0;
 
+
     while (1) 
     {
         printf("Shell> ");
@@ -38,10 +39,88 @@ int main() {
         }
 
         /* You should start programming from here... */
-        for (int i = 0; i < command_count; i++) 
-        {
-            printf("Command %d: %s\n", i, commands[i]);
-        }    
+
+        if (command_count == 0)
+            continue;
+
+        char *temp_args[100];
+        int arg_i = 0;
+        char* temp_cmd = malloc(strlen(commands[0]) + 1);
+        strcpy(temp_cmd, commands[0]);
+        char *arg = strtok(temp_cmd, " ");
+        while (arg != NULL) {
+            temp_args[arg_i++] = arg;
+            arg = strtok(NULL, " ");
+        }
+        temp_args[arg_i] = NULL;
+
+        if (temp_args[0] && strcmp(temp_args[0], "exit") == 0) {
+            free(temp_cmd);
+            exit(0);
+        }
+        free(temp_cmd);
+
+
+        //defino los pipeS
+        int pipes[MAX_COMMANDS - 1][2];
+        for (int i = 0; i < command_count - 1; i++) {
+            if (pipe(pipes[i]) == -1) {
+                perror("pipe");
+                exit(1);
+            }
+        }
+
+        for (int i = 0; i < command_count; i++) {
+            pid_t pid = fork();
+            if (pid == -1) {
+                perror("fork");
+                exit(1);
+            }
+
+            if (pid == 0) {
+                
+                if (i > 0)
+                    dup2(pipes[i - 1][0], STDIN_FILENO);
+
+                
+                if (i < command_count - 1)
+                    dup2(pipes[i][1], STDOUT_FILENO);
+
+                
+                for (int j = 0; j < command_count - 1; j++) {
+                    close(pipes[j][0]);
+                    close(pipes[j][1]);
+                }
+
+                
+                char *args[100];
+                int arg_i = 0;
+                char *arg = strtok(commands[i], " ");
+                while (arg != NULL) {
+                    args[arg_i++] = arg;
+                    arg = strtok(NULL, " ");
+                }
+                args[arg_i] = NULL;
+
+                if (args[0] && strcmp(args[0], "exit") == 0)
+                    exit(0);
+
+                execvp(args[0], args);
+                perror("execvp");
+                exit(1);
+            }
+        }
+
+       
+        for (int i = 0; i < command_count - 1; i++) {
+            close(pipes[i][0]);
+            close(pipes[i][1]);
+        }
+
+        for (int i = 0; i < command_count; i++){
+            wait(NULL);
+            }
+
+        command_count = 0;
     }
-    return 0;
 }
