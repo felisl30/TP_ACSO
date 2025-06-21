@@ -894,45 +894,45 @@ void print_summary(const vector < TestCase > & tests) {
 }
 
 int main() {
-    vector<TestCase> tests = { // LOS F FALLAN VALGRIND
-        //F {"B01", "Basic execution (3 tasks on 2 threads)",           test_basic},
-        // {"B02", "Wait without scheduling",                          test_wait_only},
-        // F{"B03", "Serial execution with 1 thread",                   test_serial_execution},
-        // F{"B04", "FIFO execution in single-thread mode",             test_fifo_single_thread},
+    vector<TestCase> tests = { // algunos vuelgan valgrind
+        // {"B01", "Basic execution (3 tasks on 2 threads)",           test_basic},// valgrind cuelga
+        {"B02", "Wait without scheduling",                          test_wait_only},
+        // {"B03", "Serial execution with 1 thread",                   test_serial_execution},// valgrind cuelga
+        // {"B04", "FIFO execution in single-thread mode",             test_fifo_single_thread},// valgrind cuelga
 
-        // F{"C01", "Stress with 1000 tasks",                           test_concurrent_stress},
-        // {"C02", "Reusing the pool after wait",                      test_reuse_pool},
-        // {"C03", "Multiple wait() calls",                            test_multiple_wait_calls},
+        // {"C01", "Stress with 1000 tasks",                           test_concurrent_stress}, //valgrind cuelga
+        {"C02", "Reusing the pool after wait",                      test_reuse_pool},
+        {"C03", "Multiple wait() calls",                            test_multiple_wait_calls},
 
-        // F{"E01", "Massive stress (10k tasks)",                       test_massive_stress},
-        // F{"E02", "Long tasks then shutdown",                         test_long_tasks_then_quit},
-        // F{"E03", "Lots of short tasks on few threads",               test_many_short_tasks_on_few_threads},
-        // F{"E04", "Detect potential deadlock",                        test_potential_deadlock}, //FALLA HEL
-        // F{"E05", "Simulated pendingTasks tracking",                  test_pending_tasks_tracking_simulado},
+        // {"E01", "Massive stress (10k tasks)",                       test_massive_stress}, //valgrind cuelga
+        // {"E02", "Long tasks then shutdown",                         test_long_tasks_then_quit}, //valgrind cuelga
+        // {"E03", "Lots of short tasks on few threads",               test_many_short_tasks_on_few_threads}, //valgrind cuelga
+        // {"E04", "Detect potential deadlock",                        test_potential_deadlock}, // helgrind cuelga
+        // {"E05", "Simulated pendingTasks tracking",                  test_pending_tasks_tracking_simulado}, //valgrind cuelga
 
-        // F{"F01", "Schedule from multiple threads",                   test_schedule_from_multiple_threads},
-        // {"F02", "Schedule after destruction (invalid use)",         test_schedule_after_destruction},
-        // {"F03", "Schedule inside another task",                     test_schedule_inside_task},
-        // {"F04", "Wait blocks until all tasks finish",               test_wait_blocks_until_finish},
-        // F{"F07", "High contention on atomic counter",                test_high_contention_atomic_updates},
-        // F{"F08", "Destroy pool immediately after scheduling",        test_immediate_destruction_after_schedule},
-        // F{"F09", "Interleaved schedule/wait execution",              test_massive_schedule_wait_interleave},
-        // {"F10", "Multiple schedule/wait rounds",                    test_schedule_after_wait_multiple_times},
-        // {"F11", "Multiple wait() calls inside tasks",               test_multiple_wait_inside_tasks},
-        // F{"F12", "Concurrent schedule/wait in parallel",             test_concurrent_schedule_wait_parallel},
+        // {"F01", "Schedule from multiple threads",                   test_schedule_from_multiple_threads}, // valgrind cuelga
+        {"F02", "Schedule after destruction (invalid use)",         test_schedule_after_destruction},
+        {"F03", "Schedule inside another task",                     test_schedule_inside_task},
+        {"F04", "Wait blocks until all tasks finish",               test_wait_blocks_until_finish},
+        // {"F07", "High contention on atomic counter",                test_high_contention_atomic_updates}, // valgrind cuelga
+        // {"F08", "Destroy pool immediately after scheduling",        test_immediate_destruction_after_schedule}, // valgrind cuelga
+        // {"F09", "Interleaved schedule/wait execution",              test_massive_schedule_wait_interleave}, // valgrind cuelga
+        {"F10", "Multiple schedule/wait rounds",                    test_schedule_after_wait_multiple_times},
+        {"F11", "Multiple wait() calls inside tasks",               test_multiple_wait_inside_tasks},
+        // {"F12", "Concurrent schedule/wait in parallel",             test_concurrent_schedule_wait_parallel}, // valgrind cuelga
 
-        // {"H01", "Wait inside task should deadlock",                 test_wait_inside_task},
+        {"H01", "Wait inside task should deadlock",                 test_wait_inside_task},
 
-        // {"L01", "Destructor waits for tasks completion",            test_destructor_waits_for_tasks},
-        // F{"L02", "Repeated pool creation and destruction",           test_repeated_pool_creation},
+        {"L01", "Destructor waits for tasks completion",            test_destructor_waits_for_tasks},
+        // {"L02", "Repeated pool creation and destruction",           test_repeated_pool_creation}, // valgrind cuelga
 
-        // {"M01", "Schedule nullptr function",                        test_schedule_nullptr},
-        // {"M02", "wait() during infinite rescheduling",              test_wait_with_infinite_schedule},
+        {"M01", "Schedule nullptr function",                        test_schedule_nullptr},
+        {"M02", "wait() during infinite rescheduling",              test_wait_with_infinite_schedule},
 
-        // {"N01", "Deep nested task scheduling",                      test_deep_nested_scheduling},
-        // {"N02", "Extreme nested scheduling (1000)",                 test_extreme_nested_scheduling},
+        {"N01", "Deep nested task scheduling",                      test_deep_nested_scheduling},
+        {"N02", "Extreme nested scheduling (1000)",                 test_extreme_nested_scheduling},
 
-        // {"T01", "Parallel speedup benchmark (4 tasks)",             test_parallel_speedup},
+        {"T01", "Parallel speedup benchmark (4 tasks)",             test_parallel_speedup},
     };
 
     for (const auto & t: tests) {
