@@ -19,12 +19,14 @@ ThreadPool::ThreadPool(size_t numThreads) : wts(numThreads), done(false) {
 }
 
 void ThreadPool::schedule(const function<void(void)>& thunk) {
-    if (done) {  
-        throw runtime_error("no se puede asignar una tarea a un thread destruido");
-    }
     if (!thunk) {  
         throw runtime_error("no se puede asignar si la función es null");
     }
+    
+    if (done) {  
+        throw runtime_error("no se puede asignar una tarea a un thread destruido");
+    }
+    
     {
         lock_guard<mutex> lock(queueLock);
         tasks.push(thunk);
